@@ -7,8 +7,8 @@ import numpy as np
 from audio_util import write_wav_16_bits
 from audio_util import generate_sin
 
-frequency_Hz = 400
-sample_rate=8000 #sampling frequency
+frequency_Hz = 2000
+sample_rate=44100 #sampling frequency
 sampling_interval = 1/sample_rate
 duration = 3 #seconds
 initial_phase = np.pi/2
