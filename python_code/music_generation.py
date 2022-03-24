@@ -1,5 +1,5 @@
 '''
-Generate a segment of a nice song.
+Generate a segment of a nice song and write to WAV file.
 Check FazendoMusicaMATLAB.pdf and exemplo_musica.m
 And folow sinusoid_generation.py
 '''

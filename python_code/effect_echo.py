@@ -7,6 +7,6 @@ Author:
 Date: 
 '''
 
-def effect_XXX():
+def echo():
     #TO-DO
     return None

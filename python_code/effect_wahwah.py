@@ -7,6 +7,6 @@ Author:
 Date: 
 '''
 
-def effect_XXX():
+def wahwah():
     #TO-DO
     return None

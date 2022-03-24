@@ -7,6 +7,6 @@ Author:
 Date: 
 '''
 
-def effect_XXX():
+def distortion():
     #TO-DO
     return None

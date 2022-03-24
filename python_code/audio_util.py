@@ -1,3 +1,6 @@
+'''
+Variety of useful methods.
+'''
 import numpy as np
 from scipy.io.wavfile import write
 

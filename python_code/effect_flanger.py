@@ -7,6 +7,6 @@ Author:
 Date: 
 '''
 
-def effect_XXX():
+def flanger():
     #TO-DO
     return None
