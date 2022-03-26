@@ -1,7 +1,7 @@
 '''
 Demonstrates specific audio effect using digital signal 
 processing (DSP).
-This effect is called XXX
+This effect is called FLANGER
 References:
 Author: Marco Aurelio
 Date: 25/03/2022
