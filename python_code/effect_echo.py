@@ -8,17 +8,17 @@ Date: 25/03/2022
 '''
 import numpy as np
 
-def echo(sig, sample_rate, delay):
+def echo(sig, sample_rate, delay_in_seconds, gain=0.9):
 
     output_audio = np.zeros(len(sig))
 
     #calculate the delay.
-    output_delay = delay*sample_rate
+    output_delay = delay_in_seconds*sample_rate
 
     #Applies delay on the received signal.
     for count, e in enumerate(sig):
 
-        output_audio[count] = e + sig[count - int(output_delay)]
+        output_audio[count] = e + gain * sig[count - int(output_delay)]
 
         sig = output_audio
 
