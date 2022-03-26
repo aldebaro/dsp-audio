@@ -46,7 +46,7 @@ signal /= np.max(np.abs(signal))
 
 # apply the chosen audio effect and generate a new signal
 if chosen_effect == 'echo':
-    new_signal = echo(signal, sample_rate, 1)
+    new_signal = echo(signal, sample_rate, 0.3, gain=0.7)
 elif chosen_effect == 'chorus':
     new_signal = chorus(signal, 1.0/sample_rate)
 elif chosen_effect == 'overdrive':
