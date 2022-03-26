@@ -23,9 +23,10 @@ from effect_wahwah import wahwah
 # assume temporary strings for testing:
 input_file_name = '../test_wav_files/sample-16bits.wav'
 output_file_name = 'test_effect.wav'
+chosen_effect = 'echo'
 #chosen_effect = 'chorus'
 #chosen_effect = 'overdrive'
-chosen_effect = 'reverb'
+#chosen_effect = 'reverb'
 impulse_response_file_name = '../impulse_responses/kingtubby-fl2a-16bits.wav'
 
 # open the WAV file, confirm it is mono and read the signal
@@ -38,12 +39,15 @@ if num_channels != 1:
     raise Exception("Signal must be mono!")
 
 #if original_signal is represented in 16 bits, convert to real numbers to facilitate manipulation
-signal = original_signal.astype(np.float)
+#signal = original_signal.astype(np.float) # `np.float` is a deprecated alias for the builtin `float` (). suggestion: np.float64
+signal = original_signal.astype(np.float64) 
 #normalize it to have amplitues in the range [-1, 1]
 signal /= np.max(np.abs(signal))
 
 # apply the chosen audio effect and generate a new signal
-if chosen_effect == 'chorus':
+if chosen_effect == 'echo':
+    new_signal = echo(signal, sample_rate, 1)
+elif chosen_effect == 'chorus':
     new_signal = chorus(signal, 1.0/sample_rate)
 elif chosen_effect == 'overdrive':
     new_signal = overdrive(signal)
@@ -54,4 +58,5 @@ elif chosen_effect == 'reverb':
 
 # write the new signal as a 16-bits WAV file. Handle normalization properly
 write_wav_16_bits(output_file_name, sample_rate, new_signal)
+
 print('Wrote file', output_file_name, 'using effect', chosen_effect)
