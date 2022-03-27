@@ -1,28 +1,34 @@
 '''
 Demonstrates specific audio effect using digital signal 
 processing (DSP).
-This effect is called XXX
+This effect is called Reverb
 References:
-Author: 
-Date: 
+Author: Mike Aleixo
+Date: 27/03/2022
 '''
 from scipy import signal
 import numpy as np
 
-    # Reverb effect
 def reverb(sig, revImpulseResponse):
-        """
-        Function to replicate reverb effect on a signal.
-        The reverb effect is the replication of the reflections of a sound wave
-        on a ambient.
-        """
-        #sig = self.normalize(self.sig)
-        #revfs, revImpulseResponse = wavfile.read(file)
+        length= len(sig)
+        nsample= np.array(range(length))
+        r=5000
+        a=0.8
         revImpulseResponse = revImpulseResponse[revImpulseResponse != 0]
-        sig = signal.fftconvolve(sig, revImpulseResponse) # using fft for convolution is faster than the usual linear convolution
-        sig /= np.max(np.abs(sig)) # normalize output
-        #sig = self.denormalize(sig)
+        sign = signal.fftconvolve(sinal, revImpulseResponse) # using fft for convolution is faster than the usual linear convolution
+        sign /= np.max(np.abs(sig)) # normalize output
+        
 
-        #TO-DO
+        index= np.round(nsample+r)
+        index[index<0]= 0 #Clip delay
+        index[index>(length-1)]= length-1
+    
+        out_sig= np.zeros(length) #Imput Signal
+
+        for j in range(length): #For each sample
+          out_sig[j]= np.float(sig[j]) + a*np.float(sig[int(index[j])]) #Add Delayed signal
+        
+        plt.plot(out_sig,'r',sig,'b')
+
         #take out the silence in the end (tail of the convolution)
-        return sig
+        return sign
