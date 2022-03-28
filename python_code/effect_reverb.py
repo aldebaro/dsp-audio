@@ -15,7 +15,7 @@ def reverb(sig, revImpulseResponse):
         r=5000
         a=0.8
         revImpulseResponse = revImpulseResponse[revImpulseResponse != 0]
-        sign = signal.fftconvolve(sinal, revImpulseResponse) # using fft for convolution is faster than the usual linear convolution
+        sign = signal.fftconvolve(sig, revImpulseResponse) # using fft for convolution is faster than the usual linear convolution
         sign /= np.max(np.abs(sig)) # normalize output
         
 
@@ -28,7 +28,7 @@ def reverb(sig, revImpulseResponse):
         for j in range(length): #For each sample
           out_sig[j]= np.float(sig[j]) + a*np.float(sig[int(index[j])]) #Add Delayed signal
         
-        plt.plot(out_sig,'r',sig,'b')
+        #plt.plot(out_sig,'r',sig,'b')
 
         #take out the silence in the end (tail of the convolution)
         return sign
