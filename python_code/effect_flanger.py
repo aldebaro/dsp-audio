@@ -3,8 +3,8 @@ Demonstrates specific audio effect using digital signal
 processing (DSP).
 This effect is called FLANGER
 References:
-Author: Marco Aurelio
-Date: 25/03/2022
+Author: Marco Aurelio Colla
+Date: 27/03/2022
 '''
 import numpy as np
 def flanger(audioin,Fs):
@@ -28,3 +28,9 @@ def flanger(audioin,Fs):
     plt.ylabel("Delay Amount (normalized)")
     plt.title("Delay vs Time")
     return out
+    
+flanger(sinal,samplerate)
+
+x=flanger(sinal,samplerate)
+
+Audio(data=x, rate=samplerate)
