@@ -28,9 +28,10 @@ def flanger(audioin,Fs):
     plt.ylabel("Delay Amount (normalized)")
     plt.title("Delay vs Time")
     return out
-    
-flanger(sinal,samplerate)
 
-x=flanger(sinal,samplerate)
+if False:    
+    flanger(sinal,samplerate)
 
-Audio(data=x, rate=samplerate)
+    x=flanger(sinal,samplerate)
+
+    Audio(data=x, rate=samplerate)
