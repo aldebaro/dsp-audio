@@ -23,10 +23,12 @@ from effect_wahwah import wahwah
 # assume temporary strings for testing:
 input_file_name = '../test_wav_files/sample-16bits.wav'
 output_file_name = 'test_effect.wav'
-chosen_effect = 'echo'
-chosen_effect = 'chorus'
+#chosen_effect = 'flanger'
+#chosen_effect = 'echo'
+#chosen_effect = 'chorus'
 #chosen_effect = 'overdrive'
 #chosen_effect = 'reverb'
+chosen_effect = 'wahwah'
 impulse_response_file_name = '../impulse_responses/kingtubby-fl2a-16bits.wav'
 
 # open the WAV file, confirm it is mono and read the signal
@@ -57,6 +59,10 @@ elif chosen_effect == 'reverb':
     new_signal = reverb(signal, impulse_response)
 elif chosen_effect == 'distortion':
     new_signal = distortion(signal)
+elif chosen_effect == 'wahwah':
+    new_signal = wahwah(signal, sample_rate)
+else:
+    raise Exception("Chosen effect is not valid!")    
 
 # write the new signal as a 16-bits WAV file. Handle normalization properly
 write_wav_16_bits(output_file_name, sample_rate, new_signal)
