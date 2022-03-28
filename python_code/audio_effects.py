@@ -24,7 +24,7 @@ from effect_wahwah import wahwah
 input_file_name = '../test_wav_files/sample-16bits.wav'
 output_file_name = 'test_effect.wav'
 chosen_effect = 'echo'
-#chosen_effect = 'chorus'
+chosen_effect = 'chorus'
 #chosen_effect = 'overdrive'
 #chosen_effect = 'reverb'
 impulse_response_file_name = '../impulse_responses/kingtubby-fl2a-16bits.wav'
