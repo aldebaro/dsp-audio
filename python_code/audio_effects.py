@@ -12,6 +12,7 @@ from effect_flanger import flanger
 from effect_overdrive import overdrive
 from effect_reverb import reverb
 from effect_wahwah import wahwah
+import sys
 
 # get from command line:
 # 1) input file name  
@@ -19,14 +20,19 @@ from effect_wahwah import wahwah
 # 3) string indicating the desired audio effect
 #optional for some effects such as reverb
 # 4) input file name with impulse response
+# TODO - currently it gets only the chosen_effect
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print('Usage:', sys.argv[0], 'chosen_effect')
+        print('where chosen_effect can be:', 'flanger', 'echo', 'chorus', 'overdrive', 'reverb', 'wahwah')
+        sys.exit(-1)
+    else:
+        chosen_effect = sys.argv[1] 
+
 
 # assume temporary strings for testing:
 input_file_name = '../test_wav_files/sample-16bits.wav'
 output_file_name = 'test_effect.wav'
-chosen_effect = 'echo'
-#chosen_effect = 'chorus'
-#chosen_effect = 'overdrive'
-#chosen_effect = 'reverb'
 impulse_response_file_name = '../impulse_responses/kingtubby-fl2a-16bits.wav'
 
 # open the WAV file, confirm it is mono and read the signal
@@ -55,6 +61,14 @@ elif chosen_effect == 'reverb':
     ir_sample_rate, impulse_response = wavfile.read(impulse_response_file_name)
     assert(sample_rate == ir_sample_rate) #sample rates must be the same
     new_signal = reverb(signal, impulse_response)
+elif chosen_effect == 'distortion':
+    new_signal = distortion(signal)
+elif chosen_effect == 'flanger':
+    new_signal = flanger(signal, sample_rate)
+elif chosen_effect == 'wahwah':
+    new_signal = wahwah(signal, sample_rate)
+else:
+    raise Exception("Chosen effect " + chosen_effect + " is not valid!")    
 
 # write the new signal as a 16-bits WAV file. Handle normalization properly
 write_wav_16_bits(output_file_name, sample_rate, new_signal)
