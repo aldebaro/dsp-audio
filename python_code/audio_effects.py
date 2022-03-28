@@ -55,6 +55,8 @@ elif chosen_effect == 'reverb':
     ir_sample_rate, impulse_response = wavfile.read(impulse_response_file_name)
     assert(sample_rate == ir_sample_rate) #sample rates must be the same
     new_signal = reverb(signal, impulse_response)
+elif chosen_effect == 'distortion':
+    new_signal = distortion(signal)
 
 # write the new signal as a 16-bits WAV file. Handle normalization properly
 write_wav_16_bits(output_file_name, sample_rate, new_signal)
