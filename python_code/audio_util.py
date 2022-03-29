@@ -38,6 +38,13 @@ def generate_sin(frequency_Hz, sampling_interval, duration, initial_phase = 0):
     x=np.sin(2*np.pi*frequency_Hz*t + initial_phase)
     return x
 
+def generate_sin2(frequency_Hz, sampling_interval, duration, initial_phase = 0):
+    num_samples = round(duration/sampling_interval)
+    n=np.arange(0,num_samples)
+    W_discrete = 2*np.pi*frequency_Hz*sampling_interval
+    x=np.sin(W_discrete*n + initial_phase)
+    return x
+
 '''
 Find the peaks of a spectrogram using morphological image processing
 as implemented in peak_local_max, described at
