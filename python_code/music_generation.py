@@ -19,7 +19,7 @@ sampling_interval = 1/sample_rate #in seconds
 single_note_duration = 0.5 #seconds
 
 #define all notes
-#frequency in Hz
+#frequency in Hz 
 c_frequency_Hz = [16.35, 32.70, 65.41, 130.81, 261.63, 523.25, 1046.50, 2093.00]
 c_notes = np.zeros((round(single_note_duration/sampling_interval), len(c_frequency_Hz)))
 for i in range(0, len(c_frequency_Hz)):
