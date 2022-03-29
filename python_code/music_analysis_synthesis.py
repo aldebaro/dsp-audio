@@ -1,60 +1,65 @@
 '''
 Music analysis and synthesis via peak-finding
-https://stackoverflow.com/questions/3684484/peak-detection-in-a-2d-array
 '''
+import numpy as np
 from scipy.io import wavfile
-from audio_util import plot_spectrogram
-from audio_util import estimate_peaks_via_image_proc
-from audio_util import plot_peaks_superimposed
 from audio_util import generate_sin
 from audio_util import write_wav_16_bits
-import numpy as np
 from matplotlib import pyplot as plt
+from scipy.signal import find_peaks
 
-input_file_name = '../test_wav_files/sample-16bits.wav'
-#input_file_name = '../test_wav_files/sinusoid_2kHz.wav'
-# open the WAV file, confirm it is mono and read the signal
-#https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.wavfile.read.html
-sample_rate, original_signal = wavfile.read(input_file_name)
-#signal has a shape (100,2) in case of a stereo signal with 100 samples
-#or (100,) if that original_signal has a single channel (mono)
-num_channels = len(original_signal.shape)
-if num_channels != 1:
-    raise Exception("Signal must be mono!")
+def load_signal(file_name):
+    # open the WAV file, confirm it is mono and read the signal
+    sample_rate, original_signal = wavfile.read(file_name)
+    num_channels = len(original_signal.shape)
+    if num_channels != 1:
+        raise Exception("Signal must be mono!")
 
-#if original_signal is represented in 16 bits, convert to real numbers to facilitate manipulation
-signal = original_signal.astype(np.float)
-#normalize it to have amplitues in the range [-1, 1]
-signal /= np.max(np.abs(signal))
+    #if original_signal is represented in 16 bits, convert to real numbers to facilitate manipulation
+    signal = original_signal.astype(float)
+    #normalize it to have amplitues in the range [-1, 1]
+    signal /= np.max(np.abs(signal))
 
-#estimate peaks
-peaks_indices, peaks_time_freq, frequency_interval, time_interval = estimate_peaks_via_image_proc(signal, sample_rate)
+    return signal, sample_rate
 
-#plot spectrogram and peaks
-plot_spectrogram(signal, sample_rate)
-plot_peaks_superimposed(peaks_time_freq)
+def peak_finding(signal, sampling_interval, sample_rate, window_length, num_fft_points, spectrum_resolution):
 
-#now synthesize sound according to peaks
-sampling_period = 1.0/sample_rate
-note_duration = time_interval
-num_notes = peaks_time_freq.shape[0]
-num_samples_per_note = int(note_duration/ sampling_period)
-output_signal = np.zeros((num_samples_per_note * num_notes))
-current_sample = 0
-for i in range(num_notes):
-    if (i > 0) & (peaks_time_freq[i-1,1] == peaks_time_freq[i,1]):
-        continue #skip same time, and use a single frequency per time interval
-    frequency_Hz = peaks_time_freq[i,0]
-    current_time = peaks_time_freq[i,1]
-    x=generate_sin(frequency_Hz, sampling_period, note_duration)
-    assert(len(x)==num_samples_per_note)
-    last_sample = current_sample + num_samples_per_note
-    output_signal[current_sample:last_sample] = x
-    current_sample += num_samples_per_note
+    powerSpectrum, frequency, time, imageAxis = plt.specgram(signal, NFFT=num_fft_points, scale='dB', Fs=sample_rate, mode='magnitude', noverlap=None, vmin=None)
 
-#write WAV
-file_name = 'synth_after_analysis.wav'
-write_wav_16_bits(file_name, sample_rate, output_signal)
-print('Wrote file', file_name)
-#show plots
-plt.show()
+    num_notes = len(powerSpectrum[1])
+    output_signal = np.zeros((num_fft_points * num_notes))
+    current_sample = 0
+    for i in range(len(powerSpectrum[1])):
+        peaks, _ = find_peaks(powerSpectrum[:,i])
+        sortead_peak_index = np.argsort(powerSpectrum[peaks,i])
+        frequency_index = peaks[sortead_peak_index[-1]]
+        frequency_Hz = frequency_index * spectrum_resolution
+
+        note = generate_sin(frequency_Hz, sampling_interval, window_length, initial_phase = 0)
+        last_sample = current_sample + num_fft_points
+        output_signal[current_sample:last_sample] = note
+        current_sample += num_fft_points
+    
+    return output_signal
+
+def main():
+    input_file_name = '../test_wav_files/music_one_note.wav'
+    #input_file_name = '../test_wav_files/music_two_note.wav'
+
+    signal, sample_rate = load_signal(input_file_name)
+    
+    Ts = 1.0 / sample_rate
+    window_length = 0.1
+    num_fft_points = int(window_length / Ts)
+    spectrum_resolution = sample_rate / num_fft_points
+
+    output_signal = peak_finding(signal, Ts, sample_rate, window_length, num_fft_points, spectrum_resolution)
+
+    #save the song in a WAV file
+    file_name = '../test_wav_files/music_one_note_after_synthesis.wav'
+    #file_name = '../test_wav_files/music_two_note_after_synthesis.wav'
+    write_wav_16_bits(file_name, sample_rate, output_signal)
+    print("Wrote file", file_name)
+
+if __name__ == "__main__":
+    main()
