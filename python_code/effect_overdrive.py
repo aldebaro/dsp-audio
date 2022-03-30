@@ -9,7 +9,7 @@ Date: 25/03/2022
 
 The modification is a verification of the optional input parameters of the Overdrive function (threshold, preGain and outputGain).
 The Overdrive function will not work if one of the parameters is a null value, but in graphic mode (audio_effects_graphic_mode.py) the user may input a null value.
-These optional input parameters are enabled in "audio_effects_graphic_mode.py" for testing different outputs according with the different input values.  
+These optional input parameters are enabled in "audio_effects_graphic_mode.py" for testing different outputs according with the different input values.
 In case of a null value the user is notified (with a graphic message box) and the original signal is returned.
 
 Original script: https://github.com/aldebaro/dsp-audio/blob/main/python_code/effect_overdrive.py
@@ -52,7 +52,9 @@ def overdrive(sig, threshold: float=2, preGain: float=1.5, outputGain: float=1):
             messagebox.showerror("Invalid Input", "Output Gain value is null, returning original signal") #notify the user
             return sig
         else: #if all values are not null then proceed
-            sig *= preGain
-            sig = np.tanh(threshold*sig) # Soft Clipping algorithm
-            sig *= outputGain # optional output gain
-            return sig
+            n_sig = sig/np.max(sig) #signal rescaled [-1, 1]
+            n_sig *= preGain
+            n_sig = np.tanh(threshold*n_sig) # Soft Clipping algorithm
+            n_sig *= outputGain # optional output gain
+            r_sig = n_sig * np.max(sig) #signal restored to original scale
+            return r_sig
