@@ -5,6 +5,7 @@ import numpy as np
 from scipy.io import wavfile
 from audio_util import generate_sin
 from audio_util import write_wav_16_bits
+from audio_util import plot_spectrogram
 from matplotlib import pyplot as plt
 from scipy.signal import find_peaks
 
@@ -22,42 +23,50 @@ def load_signal(file_name):
 
     return signal, sample_rate
 
-def peak_finding(signal, sampling_interval, sample_rate, window_length, num_fft_points, spectrum_resolution):
+def peak_finding(signal, sampling_interval, sample_rate, window_length, num_notes, num_fft_points, spectrum_resolution):
 
     powerSpectrum, frequency, time, imageAxis = plt.specgram(signal, NFFT=num_fft_points, scale='dB', Fs=sample_rate, mode='magnitude', noverlap=None, vmin=None)
 
-    num_notes = len(powerSpectrum[1])
-    output_signal = np.zeros((num_fft_points * num_notes))
+    num_windows = len(powerSpectrum[1]) #total number of observation windows
+    output_signal = np.zeros((num_fft_points * num_windows))
     current_sample = 0
-    for i in range(len(powerSpectrum[1])):
-        peaks, _ = find_peaks(powerSpectrum[:,i])
-        sortead_peak_index = np.argsort(powerSpectrum[peaks,i])
-        frequency_index = peaks[sortead_peak_index[-1]]
-        frequency_Hz = frequency_index * spectrum_resolution
+    for i in range(num_windows): #iterate over each observation window
+        peaks, _ = find_peaks(powerSpectrum[:,i]) #find the peak frequencies
+        sortead_peak_index = np.argsort(powerSpectrum[peaks,i]) #sort the peak frequencies array in ascending order
+        for j in range(num_notes - 1): #iterate over each note to generate a sine signal
+            frequency_index = peaks[sortead_peak_index[-(j+1)]] #get the index of the most powerful frequencies
+            frequency_Hz = frequency_index * spectrum_resolution #convert from index to Hz
 
-        note = generate_sin(frequency_Hz, sampling_interval, window_length, initial_phase = 0)
-        last_sample = current_sample + num_fft_points
-        output_signal[current_sample:last_sample] = note
+            note = generate_sin(frequency_Hz, sampling_interval, window_length, initial_phase = 0) #generate the sine signal
+            last_sample = current_sample + num_fft_points
+            output_signal[current_sample:last_sample] += note #store all the notes in a single observation window
         current_sample += num_fft_points
-    
+
     return output_signal
 
 def main():
-    input_file_name = '../test_wav_files/music_one_note.wav'
+    #input_file_name = '../test_wav_files/music_one_note.wav'
     #input_file_name = '../test_wav_files/music_two_note.wav'
+    input_file_name = '../test_wav_files/sample-16bits.wav'
 
     signal, sample_rate = load_signal(input_file_name)
     
     Ts = 1.0 / sample_rate
-    window_length = 0.1
+    window_length = 0.25 #observation window size in seconds
+    num_notes = 5 #number of notes to be found in each observation window
     num_fft_points = int(window_length / Ts)
     spectrum_resolution = sample_rate / num_fft_points
 
-    output_signal = peak_finding(signal, Ts, sample_rate, window_length, num_fft_points, spectrum_resolution)
+    output_signal = peak_finding(signal, Ts, sample_rate, window_length, num_notes, num_fft_points, spectrum_resolution)
+
+    #plot spectrogram
+    plot_spectrogram(output_signal, sample_rate)
+    plt.show()
 
     #save the song in a WAV file
-    file_name = '../test_wav_files/music_one_note_after_synthesis.wav'
+    #file_name = '../test_wav_files/music_one_note_after_synthesis.wav'
     #file_name = '../test_wav_files/music_two_note_after_synthesis.wav'
+    file_name = '../test_wav_files/sample-16bits_after_synthesis.wav'
     write_wav_16_bits(file_name, sample_rate, output_signal)
     print("Wrote file", file_name)
 
